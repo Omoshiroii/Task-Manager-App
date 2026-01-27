@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="A powerful, feature-rich task manager built with vanilla JavaScript">
+    <meta name="theme-color" content="#1a1a2e">
+    <title>TaskFlow — Smart Task Management</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/variables.css">
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/header.css">
+    <link rel="stylesheet" href="css/sidebar.css">
+    <link rel="stylesheet" href="css/content.css">
+    <link rel="stylesheet" href="css/tasks.css">
+    <link rel="stylesheet" href="css/focus.css">
+    <link rel="stylesheet" href="css/notifications.css">
+    <link rel="stylesheet" href="css/animations.css">
+    <link rel="stylesheet" href="css/responsive.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- HEADER -->
+        <header>
+            <div class="logo">
+                <div class="logo-icon">T</div>
+                <h1>TaskFlow</h1>
+            </div>
+            <div class="header-actions">
+                <button class="theme-toggle" title="Toggle theme" aria-label="Toggle theme">🌙</button>
+                <button class="focus-mode-btn" title="Focus Mode (F)" aria-label="Enter focus mode">🎯</button>
+            </div>
+        </header>
+
+        <!-- MAIN CONTENT -->
+        <main>
+            <!-- SIDEBAR -->
+            <aside class="sidebar">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <span class="stat-label">Total</span>
+                            <div class="stat-icon">📝</div>
+                        </div>
+                        <div class="stat-value" id="stat-total">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <span class="stat-label">Active</span>
+                            <div class="stat-icon">⚡</div>
+                        </div>
+                        <div class="stat-value" id="stat-active">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <span class="stat-label">Done</span>
+                            <div class="stat-icon">✅</div>
+                        </div>
+                        <div class="stat-value" id="stat-completed">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <span class="stat-label">Today</span>
+                            <div class="stat-icon">📅</div>
+                        </div>
+                        <div class="stat-value" id="stat-today">0</div>
+                    </div>
+                </div>
+
+                <div class="filters-section">
+                    <div class="filters-title">Filters</div>
+                    <button class="filter-btn active" data-filter="all">
+                        <span>📋</span>
+                        <span>All Tasks</span>
+                        <span class="filter-count" id="count-all">0</span>
+                    </button>
+                    <button class="filter-btn" data-filter="today">
+                        <span>☀️</span>
+                        <span>Today</span>
+                        <span class="filter-count" id="count-today">0</span>
+                    </button>
+                    <button class="filter-btn" data-filter="upcoming">
+                        <span>📆</span>
+                        <span>Upcoming</span>
+                        <span class="filter-count" id="count-upcoming">0</span>
+                    </button>
+                    <button class="filter-btn" data-filter="completed">
+                        <span>✔️</span>
+                        <span>Completed</span>
+                        <span class="filter-count" id="count-completed">0</span>
+                    </button>
+                    <button class="filter-btn" data-filter="overdue">
+                        <span>⚠️</span>
+                        <span>Overdue</span>
+                        <span class="filter-count" id="count-overdue">0</span>
+                    </button>
+                </div>
+            </aside>
+
+            <!-- CONTENT -->
+            <div class="content">
+                <!-- ADD TASK -->
+                <section class="add-task-section">
+                    <h2 class="add-task-title">Create New Task</h2>
+                    <div class="input-group">
+                        <input 
+                            type="text" 
+                            class="task-input" 
+                            id="task-input" 
+                            placeholder="What needs to be done?"
+                            aria-label="Task title"
+                        >
+                        <button class="btn-primary" id="add-task-btn">
+                            <span>Add Task</span>
+                        </button>
+                    </div>
+                    <div class="task-options">
+                        <div class="option-group">
+                            <label class="option-label">Priority</label>
+                            <div class="priority-btns">
+                                <button class="priority-btn low" data-priority="low">Low</button>
+                                <button class="priority-btn medium active" data-priority="medium">Medium</button>
+                                <button class="priority-btn high" data-priority="high">High</button>
+                            </div>
+                        </div>
+                        <div class="option-group">
+                            <label class="option-label">Due Date</label>
+                            <input type="date" class="date-input" id="due-date-input" aria-label="Due date">
+                        </div>
+                    </div>
+                </section>
+
+                <!-- TASKS LIST -->
+                <section>
+                    <div class="tasks-header">
+                        <h2 class="tasks-title" id="tasks-title">All Tasks</h2>
+                        <button class="sort-btn" id="sort-btn">
+                            <span>Sort</span>
+                            <span>⬍</span>
+                        </button>
+                    </div>
+                    <div class="tasks-list" id="tasks-list">
+                        <!-- Tasks will be rendered here -->
+                    </div>
+                </section>
+            </div>
+        </main>
+
+        <!-- FOOTER -->
+        <footer>
+            <p>Built with ❤️ using Vanilla JavaScript • <span class="highlight" id="task-count">0 tasks</span> managed</p>
+        </footer>
+    </div>
+
+    <!-- FOCUS MODE OVERLAY -->
+    <div class="focus-overlay" id="focus-overlay">
+        <div class="focus-container">
+            <div class="focus-task" id="focus-task-title">Focus on your current task</div>
+            <div class="focus-timer" id="focus-timer">25:00</div>
+            <div class="focus-controls">
+                <button class="focus-btn" id="focus-start">Start</button>
+                <button class="focus-btn" id="focus-exit">Exit Focus</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- TOAST NOTIFICATION -->
+    <div class="toast" id="toast">
+        <div class="toast-icon">✓</div>
+        <div class="toast-message" id="toast-message">Task completed!</div>
+    </div>
+
+    <!-- UNDO BAR -->
+    <div class="undo-bar" id="undo-bar">
+        <span id="undo-message">Task deleted</span>
+        <button class="undo-btn" id="undo-btn">Undo</button>
+    </div>
+
+    <!-- JavaScript Modules -->
+    <script src="js/utils.js"></script>
+    <script src="js/storage.js"></script>
+    <script src="js/state.js"></script>
+    <script src="js/taskOperations.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/focusMode.js"></script>
+    <script src="js/handlers.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>

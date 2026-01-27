@@ -1,0 +1,115 @@
+/* Responsive Styles */
+@media (max-width: 1024px) {
+    main {
+        grid-template-columns: 1fr;
+    }
+    
+    .sidebar {
+        order: 2;
+    }
+    
+    .content {
+        order: 1;
+    }
+    
+    .stats-grid {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .app-container {
+        padding: 15px;
+        gap: 20px;
+    }
+    
+    header {
+        padding: 15px 20px;
+    }
+    
+    .logo h1 {
+        font-size: 20px;
+    }
+    
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .task-options {
+        grid-template-columns: 1fr;
+    }
+    
+    .input-group {
+        flex-direction: column;
+    }
+    
+    .focus-container {
+        padding: 40px 30px;
+    }
+    
+    .focus-task {
+        font-size: 22px;
+    }
+    
+    .focus-timer {
+        font-size: 48px;
+    }
+
+    .toast {
+        right: 15px;
+        left: 15px;
+        bottom: 15px;
+    }
+
+    .undo-bar {
+        left: 15px;
+        right: 15px;
+        transform: translateX(0) translateY(100px);
+    }
+
+    .undo-bar.show {
+        transform: translateX(0) translateY(0);
+    }
+}
+
+@media (max-width: 480px) {
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .priority-btns {
+        grid-template-columns: 1fr;
+    }
+
+    .logo-icon {
+        width: 36px;
+        height: 36px;
+        font-size: 18px;
+    }
+
+    .logo h1 {
+        font-size: 18px;
+    }
+
+    .theme-toggle, .focus-mode-btn {
+        width: 40px;
+        height: 40px;
+        font-size: 18px;
+    }
+
+    .add-task-section {
+        padding: 20px;
+    }
+
+    .task-item {
+        padding: 16px;
+    }
+
+    .empty-icon {
+        font-size: 56px;
+    }
+
+    .empty-title {
+        font-size: 20px;
+    }
+}
