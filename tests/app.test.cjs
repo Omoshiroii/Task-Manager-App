@@ -12,7 +12,7 @@ function app(seed=[]){
  vm.runInNewContext(code,{document:{documentElement:{dataset:{theme:'dark'}},querySelector:get,querySelectorAll:()=>[],addEventListener(){},createElement:()=>get('link')},localStorage:{getItem:k=>storage.get(k),setItem:(k,v)=>storage.set(k,v)},crypto:webcrypto,Date,JSON,String,Number,Array,Math,Set,Blob,URL,setTimeout:()=>0,clearTimeout(){},setInterval:()=>0,clearInterval(){},window:{addEventListener(){}}});
  return {get,tasks:()=>JSON.parse(storage.get('taskflow_v1'))};
 }
-function localDay(){const d=new Date();return [d.getFullYear(),String(d.getMonth()+1).padStart(2,'0'),String(d.getDate()).padStart(2,'0')].join('-')}
+function localDay(offset=0){const d=new Date();d.setDate(d.getDate()+offset);return [d.getFullYear(),String(d.getMonth()+1).padStart(2,'0'),String(d.getDate()).padStart(2,'0')].join('-')}
 test('create, edit, complete, delete and undo persist correctly',()=>{
  const a=app(),g=a.get;
  g('#add').onclick();g('#task-title').value='  Plan my day  ';g('#notes').value='First step';g('#priority').value='high';
@@ -42,4 +42,30 @@ test('focus session can start, pause and reset',()=>{
  const a=app();a.get('#focus-start').onclick();assert.equal(a.get('#focus-start').textContent,'Pause session');
  a.get('#focus-start').onclick();assert.equal(a.get('#focus-start').textContent,'Resume session ↗');
  a.get('#focus-reset').onclick();assert.equal(a.get('#timer').textContent,'25:00');
+});
+
+test('move overdue tasks to today changes only unfinished past dates and undo restores them exactly',()=>{
+ const base={notes:'Keep these details',priority:'medium',completed:false,completedAt:'',createdAt:'2026-01-01T09:00:00.000Z'};
+ const seed=[
+  {...base,id:'yesterday',title:'Yesterday task',dueDate:localDay(-1),priority:'high'},
+  {...base,id:'older',title:'Older task',dueDate:localDay(-8)},
+  {...base,id:'today',title:'Already today',dueDate:localDay()},
+  {...base,id:'future',title:'Future task',dueDate:localDay(1)},
+  {...base,id:'undated',title:'Someday task',dueDate:''},
+  {...base,id:'complete',title:'Finished earlier',dueDate:localDay(-2),completed:true,completedAt:localDay(-1)}
+ ];
+ const a=app(seed);
+ assert.equal(a.get('#carry-over').hidden,false);
+ assert.match(a.get('#carry-count').textContent,/^2 unfinished tasks/);
+ a.get('#carry-today').onclick();
+ assert.deepEqual(a.tasks(),seed.map(t=>['yesterday','older'].includes(t.id)?{...t,dueDate:localDay()}:t));
+ assert.equal(a.get('#carry-over').hidden,true);
+ assert.equal(a.get('#undo').hidden,false);
+ a.get('#undo').onclick();
+ assert.deepEqual(a.tasks(),seed);
+ assert.equal(a.get('#carry-over').hidden,false);
+ assert.equal(a.get('#undo').hidden,true);
+ // A consumed undo cannot insert tasks or change their dates again.
+ a.get('#undo').onclick();
+ assert.deepEqual(a.tasks(),seed);
 });

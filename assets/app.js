@@ -29,8 +29,8 @@ function normalize(data) {
   return {id,title:t.title.trim(),notes:typeof t.notes==='string'?t.notes.slice(0,3000):'',priority:['low','medium','high'].includes(t.priority)?t.priority:'medium',dueDate:validDate(t.dueDate?.slice(0,10))?t.dueDate.slice(0,10):'',completed:t.completed===true,completedAt:typeof t.completedAt==='string'?t.completedAt:'',createdAt:typeof t.createdAt==='string'?t.createdAt:new Date().toISOString()};
  });
 }
-let tasks=[], view='today', status='all', editing=null, deleted=null, toastTimeout;
-function notify(message, undo=false) { clearTimeout(toastTimeout); $('#message').textContent=message; $('#undo').hidden=!undo; $('#toast').hidden=false; toastTimeout=setTimeout(()=>$('#toast').hidden=true,undo?12000:5000); }
+let tasks=[], view='today', status='all', editing=null, undoAction=null, toastTimeout;
+function notify(message, undo=false) { if(!undo) undoAction=null; clearTimeout(toastTimeout); $('#message').textContent=message; $('#undo').hidden=!undo; $('#toast').hidden=false; toastTimeout=setTimeout(()=>$('#toast').hidden=true,undo?12000:5000); }
 try { const raw=localStorage.getItem(key); if(raw) tasks=normalize(JSON.parse(raw)); } catch { notify('Saved tasks could not be read. Export a backup before making changes.'); $('#save-status').textContent='Could not read saved tasks'; }
 function save() {
  try { localStorage.setItem(key,JSON.stringify(tasks)); $('#save-status').textContent='Saved on this device'; }
@@ -38,7 +38,7 @@ function save() {
  render();
 }
 const inView=(t,v)=> v==='today' ? t.dueDate===today() || (t.completed && t.completedAt?.slice(0,10)===today()) : v==='upcoming' ? !t.completed && t.dueDate>today() : v==='overdue' ? !t.completed && !!t.dueDate && t.dueDate<today() : v==='completed' ? t.completed : true;
-const labels={today:["Make today count.","A clear mind starts with a clear plan.","Today's tasks"],all:["A little more clarity.","Everything you need to do, in one thoughtful place.","All tasks"],upcoming:["Good things ahead.","Make a little room for what's next.","Upcoming tasks"],overdue:["A fresh start awaits.","Revisit, reschedule, or take one small step.","Overdue tasks"],completed:["Look how far you've come.","Take a moment to appreciate your progress.","Completed tasks"]};
+const labels={today:["Your day, in focus.","A little intention. A little progress. A day well spent.","Today's tasks"],all:["A little more clarity.","Everything you need to do, in one thoughtful place.","All tasks"],upcoming:["Good things ahead.","Make a little room for what's next.","Upcoming tasks"],overdue:["A fresh start awaits.","Revisit, reschedule, or take one small step.","Overdue tasks"],completed:["Look how far you've come.","Take a moment to appreciate your progress.","Completed tasks"]};
 function dateLabel(date) {
  if (!date) return 'No due date';
  if(date===today()) return 'Today';
@@ -50,6 +50,9 @@ function render(){
  $('#date').textContent=new Date().toLocaleDateString(undefined,{weekday:'long',month:'long',day:'numeric'}).toUpperCase();
  const [title,sub,list]=labels[view]; $('#title').textContent=title;$('#subtitle').textContent=sub;$('#list-title').textContent=list;
  document.querySelectorAll('[data-view]').forEach(b=>{b.classList.toggle('active',b.dataset.view===view);b.setAttribute('aria-current',b.dataset.view===view?'page':'false');b.querySelector('i').textContent=tasks.filter(t=>inView(t,b.dataset.view) && (b.dataset.view==='completed'||!t.completed)).length;});
+ const overdue=tasks.filter(t=>inView(t,'overdue'));
+ $('#carry-over').hidden=overdue.length===0 || !['today','overdue'].includes(view);
+ $('#carry-count').textContent=overdue.length+' unfinished task'+(overdue.length===1?'':'s')+' from earlier days';
  const daily=tasks.filter(t=>inView(t,'today')),done=daily.filter(t=>t.completed).length;
  $('#active-count').textContent=daily.length-done;$('#done-count').textContent=done;
  const percent=daily.length?Math.round(done/daily.length*100):0;
@@ -57,7 +60,7 @@ function render(){
  const query=$('#search').value.trim().toLowerCase(), order={high:0,medium:1,low:2};
  let shown=tasks.filter(t=>inView(t,view)&&(status==='all'||t.completed===(status==='done'))&&(t.title+' '+t.notes).toLowerCase().includes(query));
  shown.sort((a,b)=>Number(a.completed)-Number(b.completed)||($('#sort').value==='priority'?order[a.priority]-order[b.priority]:$('#sort').value==='title'?a.title.localeCompare(b.title):$('#sort').value==='newest'?b.createdAt.localeCompare(a.createdAt):(a.dueDate||'9999').localeCompare(b.dueDate||'9999'))||b.createdAt.localeCompare(a.createdAt));
- $('#tasks').innerHTML=shown.length?shown.map(t=>'<article class="task '+(t.completed?'completed':'')+'" data-id="'+escape(t.id)+'"><input type="checkbox" class="check" aria-label="Complete '+escape(t.title)+'" '+(t.completed?'checked':'')+'><div class="task-body"><button class="task-name" data-action="edit">'+escape(t.title)+'</button>'+(t.notes?'<p class="notes">'+escape(t.notes)+'</p>':'')+'<div class="meta"><span class="priority '+t.priority+'">'+t.priority[0].toUpperCase()+t.priority.slice(1)+'</span><span class="'+(!t.completed&&t.dueDate&&t.dueDate<today()?'overdue':'')+'">'+escape(dateLabel(t.dueDate))+(!t.completed&&t.dueDate&&t.dueDate<today()?' · Overdue':'')+'</span></div></div><div class="actions"><button data-action="edit" aria-label="Edit '+escape(t.title)+'">Edit</button><button data-action="delete" aria-label="Delete '+escape(t.title)+'">×</button></div></article>').join(''):'<div class="empty"><span aria-hidden="true">◷</span><h3>'+(query||status!=='all'?'Nothing matches just yet':view==='today'?'Your day is a blank canvas':view==='completed'?'Good things take a first step':'A little breathing room')+'</h3><p>'+(query||status!=='all'?'Try a different search or status filter.':view==='today'?'Add something you want to move forward today. Start small, and make it meaningful.':view==='completed'?'Your completed tasks will find a home here.':'No tasks in this view. Add a task or explore your other lists.')+'</p></div>';
+ $('#tasks').innerHTML=shown.length?shown.map(t=>'<article class="task '+(t.completed?'completed':'')+'" data-id="'+escape(t.id)+'"><input type="checkbox" class="check" aria-label="Complete '+escape(t.title)+'" '+(t.completed?'checked':'')+'><div class="task-body"><button class="task-name" data-action="edit">'+escape(t.title)+'</button>'+(t.notes?'<p class="notes">'+escape(t.notes)+'</p>':'')+'<div class="meta"><span class="priority '+t.priority+'">'+t.priority[0].toUpperCase()+t.priority.slice(1)+'</span><span class="'+(!t.completed&&t.dueDate&&t.dueDate<today()?'overdue':'')+'">'+escape(dateLabel(t.dueDate))+(!t.completed&&t.dueDate&&t.dueDate<today()?' · Overdue':'')+'</span></div></div><div class="actions"><button data-action="edit" aria-label="Edit '+escape(t.title)+'">Edit</button><button data-action="delete" aria-label="Delete '+escape(t.title)+'">×</button></div></article>').join(''):'<div class="empty"><span class="empty-art" aria-hidden="true"><svg class="icon"><use href="#icon-list"/></svg></span><h3>'+(query||status!=='all'?'Nothing matches just yet':view==='today'?'Start with one small thing.':view==='completed'?'Good things take a first step':'A little breathing room')+'</h3><p>'+(query||status!=='all'?'Try a different search or status filter.':view==='today'?'A clear plan starts with a single task. Add what matters today, and take it from there.':view==='completed'?'Your completed tasks will find a home here.':'No tasks in this view. Add a task or explore your other lists.')+'</p></div>';
  const selected=$('#focus-task').value;
  $('#focus-task').innerHTML='<option value="">Choose a task to focus on</option>'+tasks.filter(t=>!t.completed).map(t=>'<option value="'+escape(t.id)+'">'+escape(t.title)+'</option>').join('');
  if(tasks.some(t=>t.id===selected&&!t.completed))$('#focus-task').value=selected;
@@ -72,8 +75,34 @@ $('#navigation').onclick=e=>{const b=e.target.closest('[data-view]');if(!b)retur
 document.querySelector('.tabs').onclick=e=>{const b=e.target.closest('[data-status]');if(!b)return;status=b.dataset.status;document.querySelectorAll('[data-status]').forEach(el=>{el.classList.toggle('selected',el===b);el.setAttribute('aria-pressed',String(el===b));});render();};
 $('#search').oninput=$('#sort').onchange=render;
 $('#tasks').addEventListener('change',e=>{if(!e.target.matches('.check'))return;const t=tasks.find(t=>t.id===e.target.closest('[data-id]').dataset.id);t.completed=e.target.checked;t.completedAt=t.completed?today():'';save();notify(t.completed?'A little progress. Nicely done.':'Task reopened.');});
-$('#tasks').onclick=e=>{const b=e.target.closest('[data-action]');if(!b)return;const id=b.closest('[data-id]').dataset.id;const task=tasks.find(t=>t.id===id);if(b.dataset.action==='edit')openEditor(task);else{deleted={task,index:tasks.indexOf(task)};tasks=tasks.filter(t=>t.id!==id);save();notify('Task deleted.',true);}};
-$('#undo').onclick=()=>{if(deleted&&!tasks.some(t=>t.id===deleted.task.id)){tasks.splice(deleted.index,0,deleted.task);deleted=null;save();notify('Task restored.');}};
+$('#tasks').onclick=e=>{const b=e.target.closest('[data-action]');if(!b)return;const id=b.closest('[data-id]').dataset.id;const task=tasks.find(t=>t.id===id);if(b.dataset.action==='edit')openEditor(task);else{undoAction={type:'delete',task,index:tasks.indexOf(task)};tasks=tasks.filter(t=>t.id!==id);save();notify('Task deleted.',true);}};
+$('#carry-today').onclick=()=>{
+ const dueDate=today();
+ const overdue=tasks.filter(t=>!t.completed && t.dueDate && t.dueDate<dueDate);
+ if(!overdue.length)return;
+ undoAction={type:'reschedule',date:dueDate,tasks:overdue.map(t=>({id:t.id,dueDate:t.dueDate}))};
+ overdue.forEach(t=>{t.dueDate=dueDate;});
+ save();
+ notify(overdue.length+' task'+(overdue.length===1?'':'s')+' moved to today.',true);
+};
+$('#undo').onclick=()=>{
+ const action=undoAction;
+ if(!action)return;
+ undoAction=null;
+ if(action.type==='delete'){
+  if(tasks.some(t=>t.id===action.task.id))return;
+  tasks.splice(action.index,0,action.task);
+  save();notify('Task restored.');
+ }else if(action.type==='reschedule'){
+  let restored=0;
+  action.tasks.forEach(previous=>{
+   const task=tasks.find(t=>t.id===previous.id);
+   // Preserve a newer date if the task was edited in another tab.
+   if(task && task.dueDate===action.date){task.dueDate=previous.dueDate;restored++;}
+  });
+  save();notify(restored+' task date'+(restored===1?'':'s')+' restored.');
+ }
+};
 $('#dismiss').onclick=()=>$('#toast').hidden=true;
 $('#export').onclick=()=>{let data=tasks;try{const raw=localStorage.getItem(key);if(raw)data=JSON.parse(raw);}catch{}const url=URL.createObjectURL(new Blob([JSON.stringify(data,null,2)],{type:'application/json'}));const link=document.createElement('a');link.href=url;link.download='taskflow-backup-'+today()+'.json';link.click();setTimeout(()=>URL.revokeObjectURL(url),1000);};
 $('#import').onclick=()=>$('#import-file').click();
@@ -85,6 +114,19 @@ $('#focus-start').onclick=()=>{if(running){tick();clearInterval(interval);runnin
 $('#focus-reset').onclick=()=>{clearInterval(interval);running=false;remaining=1500;drawTimer();$('#focus-start').textContent='Start a focus session ↗';$('#focus-reset').hidden=true;$('#focus-caption').textContent='Clear the distractions. Find your flow.';};
 document.addEventListener('keydown',e=>{if(e.key.toLowerCase()==='n'&&!e.ctrlKey&&!e.metaKey&&!e.altKey&&!e.target.matches('input,textarea,select')&&!$('#dialog').open){e.preventDefault();openEditor();}});
 window.addEventListener('storage',e=>{if(e.key==='taskflow_theme'){applyTheme(e.newValue==='light'?'light':'dark');}if(e.key===key){try{tasks=normalize(JSON.parse(e.newValue||'[]'));render();}catch{notify('Could not load changes from another tab.');}}});
+const clockFormat=new Intl.DateTimeFormat(undefined,{hour:'2-digit',minute:'2-digit',second:'2-digit',hourCycle:'h23'});
+const clockDateFormat=new Intl.DateTimeFormat(undefined,{weekday:'short',month:'short',day:'numeric'});
+const clockZone=clockFormat.resolvedOptions().timeZone;
+function updateClock(){
+ const now=new Date();
+ $('#clock').textContent=clockFormat.format(now);
+ $('#clock').setAttribute('datetime',now.toISOString());
+ $('#clock').setAttribute('title','Local time · '+clockZone);
+ $('#clock-date').textContent=clockDateFormat.format(now);
+}
+updateClock();
+setInterval(updateClock,1000);
+document.addEventListener('visibilitychange',updateClock);
 let day=today();setInterval(()=>{if(day!==today()){day=today();render();}},30000);
 render();
 })();

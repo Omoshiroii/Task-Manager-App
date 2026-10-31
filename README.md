@@ -12,6 +12,8 @@ python3 -m http.server 8000
 
 Visit http://localhost:8000. Press **N** to add a task. Tasks support notes, priorities, optional due dates, editing, completion, deletion with undo, search, and sorting. My day includes tasks due today and tasks completed today. Undated tasks live in All tasks. Overdue tasks have their own view.
 
+The header clock shows your local time and date. When tasks are overdue, **Move to today** brings unfinished tasks into today’s plan; the notification offers undo to restore their original dates.
+
 A 25-minute focus timer supports pause and reset. The timer uses elapsed wall-clock time when browser tabs are throttled; keep the page open for the session.
 
 ## Appearance
@@ -35,4 +37,4 @@ node --check assets/app.js
 node --test tests/app.test.cjs
 ```
 
-The tests cover the task lifecycle, legacy storage, HTML escaping, asset paths, and focus controls. A real-browser visual check is still recommended before release.
+The tests cover the task lifecycle, legacy storage, HTML escaping, asset paths, and focus controls. The suite also verifies overdue rescheduling and undo. The redesign was checked in Chromium on desktop and mobile, including both themes, task editing, and the live clock.
