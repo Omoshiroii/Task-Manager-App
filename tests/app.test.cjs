@@ -9,7 +9,7 @@ function app(seed=[]){
  const get=s=>{if(!nodes.has(s))nodes.set(s,{value:'',textContent:'',innerHTML:'',hidden:false,style:{},dataset:{},classList:{toggle(){}},setAttribute(){},addEventListener(type,fn){this[type]=fn},focus(){},click(){},reset(){},showModal(){this.open=true},close(){this.open=false},setCustomValidity(){},reportValidity(){},files:[]});return nodes.get(s)};
  get('#sort').value='priority';
  const storage=new Map([['taskflow_v1',JSON.stringify(seed)]]);
- vm.runInNewContext(code,{document:{querySelector:get,querySelectorAll:()=>[],addEventListener(){},createElement:()=>get('link')},localStorage:{getItem:k=>storage.get(k),setItem:(k,v)=>storage.set(k,v)},crypto:webcrypto,Date,JSON,String,Number,Array,Math,Set,Blob,URL,setTimeout:()=>0,clearTimeout(){},setInterval:()=>0,clearInterval(){},window:{addEventListener(){}}});
+ vm.runInNewContext(code,{document:{documentElement:{dataset:{theme:'dark'}},querySelector:get,querySelectorAll:()=>[],addEventListener(){},createElement:()=>get('link')},localStorage:{getItem:k=>storage.get(k),setItem:(k,v)=>storage.set(k,v)},crypto:webcrypto,Date,JSON,String,Number,Array,Math,Set,Blob,URL,setTimeout:()=>0,clearTimeout(){},setInterval:()=>0,clearInterval(){},window:{addEventListener(){}}});
  return {get,tasks:()=>JSON.parse(storage.get('taskflow_v1'))};
 }
 function localDay(){const d=new Date();return [d.getFullYear(),String(d.getMonth()+1).padStart(2,'0'),String(d.getDate()).padStart(2,'0')].join('-')}

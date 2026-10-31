@@ -2,6 +2,21 @@
 'use strict';
 const $ = s => document.querySelector(s);
 const key = 'taskflow_v1';
+const root = document.documentElement;
+function applyTheme(theme) {
+ root.dataset.theme = theme;
+ $('#theme-toggle').textContent = theme === 'dark' ? 'Light mode' : 'Dark mode';
+ $('#theme-toggle').setAttribute('aria-label', 'Switch to ' + (theme === 'dark' ? 'light' : 'dark') + ' mode');
+ $('#theme-toggle').setAttribute('aria-pressed', String(theme === 'light'));
+ $('meta[name="theme-color"]').setAttribute('content', theme === 'dark' ? '#000f08' : '#f4fff8');
+}
+applyTheme(root.dataset.theme === 'light' ? 'light' : 'dark');
+$('#theme-toggle').onclick = () => {
+ const theme = root.dataset.theme === 'dark' ? 'light' : 'dark';
+ applyTheme(theme);
+ try { localStorage.setItem('taskflow_theme', theme); } catch { /* Theme still works for this session. */ }
+};
+
 const today = () => { const d = new Date(); return [d.getFullYear(), String(d.getMonth()+1).padStart(2,'0'), String(d.getDate()).padStart(2,'0')].join('-'); };
 const escape = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const validDate = value => typeof value === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(value) && !Number.isNaN(new Date(value+'T12:00:00').getTime()) && new Date(value+'T12:00:00').getFullYear() > 0 && (() => {const d=new Date(value+'T12:00:00');return [d.getFullYear(),String(d.getMonth()+1).padStart(2,'0'),String(d.getDate()).padStart(2,'0')].join('-')===value;})();
@@ -69,7 +84,7 @@ function tick(){remaining=Math.max(0,Math.ceil((deadline-Date.now())/1000));draw
 $('#focus-start').onclick=()=>{if(running){tick();clearInterval(interval);running=false;$('#focus-start').textContent='Resume session ↗';return;}if(!remaining)remaining=1500;deadline=Date.now()+remaining*1000;running=true;interval=setInterval(tick,250);$('#focus-start').textContent='Pause session';$('#focus-reset').hidden=false;$('#focus-caption').textContent='One thing at a time. You have this.';};
 $('#focus-reset').onclick=()=>{clearInterval(interval);running=false;remaining=1500;drawTimer();$('#focus-start').textContent='Start a focus session ↗';$('#focus-reset').hidden=true;$('#focus-caption').textContent='Clear the distractions. Find your flow.';};
 document.addEventListener('keydown',e=>{if(e.key.toLowerCase()==='n'&&!e.ctrlKey&&!e.metaKey&&!e.altKey&&!e.target.matches('input,textarea,select')&&!$('#dialog').open){e.preventDefault();openEditor();}});
-window.addEventListener('storage',e=>{if(e.key===key){try{tasks=normalize(JSON.parse(e.newValue||'[]'));render();}catch{notify('Could not load changes from another tab.');}}});
+window.addEventListener('storage',e=>{if(e.key==='taskflow_theme'){applyTheme(e.newValue==='light'?'light':'dark');}if(e.key===key){try{tasks=normalize(JSON.parse(e.newValue||'[]'));render();}catch{notify('Could not load changes from another tab.');}}});
 let day=today();setInterval(()=>{if(day!==today()){day=today();render();}},30000);
 render();
 })();

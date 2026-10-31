@@ -14,6 +14,10 @@ Visit http://localhost:8000. Press **N** to add a task. Tasks support notes, pri
 
 A 25-minute focus timer supports pause and reset. The timer uses elapsed wall-clock time when browser tabs are throttled; keep the page open for the session.
 
+## Appearance
+
+Dark mode is the default, using Onyx (#000F08), Jet Black (#1C3738), Charcoal (#4D4847), Mint Cream (#F4FFF8), and Cool Steel (#8BAAAD). The sidebar theme button switches between dark and light modes. Your choice is saved on this device.
+
 ## Your data
 
 Tasks are stored in this browser's local storage, using the original `taskflow_v1` key for compatibility. There is no server sync. Export backups before clearing browser data or switching devices. Import merges tasks by ID without replacing existing tasks. Changes synchronize between open tabs on the same origin. Fonts use Google Fonts with local sans-serif fallbacks.
