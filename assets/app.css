@@ -327,3 +327,70 @@ textarea { resize: vertical; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { transition: none !important; scroll-behavior: auto !important; }
 }
+
+/* Dashboard charts */
+:root {
+  --chart-high: var(--steel); --chart-medium: var(--mint); --chart-low: var(--charcoal);
+  --chart-track: rgb(from var(--steel) r g b / .2); --chart-grid: rgb(from var(--steel) r g b / .2);
+}
+:root[data-theme="light"] {
+  --chart-high: var(--jet); --chart-medium: var(--onyx); --chart-low: var(--steel);
+  --chart-track: rgb(from var(--jet) r g b / .18); --chart-grid: rgb(from var(--jet) r g b / .16);
+}
+.charts { display:grid; grid-template-columns:minmax(0,1.65fr) minmax(290px,1fr); gap:16px; margin:0 0 27px; }
+.chart-card { min-width:0; padding:21px 23px 17px; border:1px solid var(--line); border-radius:10px; background:var(--panel); }
+.chart-header { display:flex; align-items:center; justify-content:space-between; gap:10px; }
+.chart-header .eyebrow { font-size:9px; letter-spacing:1.35px; margin-bottom:7px; }
+.chart-header h2 { font-size:16px; }
+.chart-summary { color:var(--muted); font-size:10px; white-space:nowrap; }
+.chart-subtitle { color:var(--muted); font-size:11px; margin:8px 0 0; }
+.weekly-chart { display:block; width:100%; height:auto; margin-top:8px; overflow:visible; }
+.chart-gridline { stroke:var(--chart-grid); stroke-width:1; stroke-dasharray:3 4; }
+.chart-baseline { stroke:var(--line); stroke-width:1; }
+.chart-axis,.chart-label { fill:var(--muted); font:10px 'DM Sans',sans-serif; }
+.chart-bar { fill:var(--charcoal); opacity:.9; transition:height .2s,y .2s,fill .2s; }
+.chart-bar.today { fill:var(--steel); opacity:1; }
+:root[data-theme="light"] .chart-bar { fill:var(--steel); }
+:root[data-theme="light"] .chart-bar.today { fill:var(--jet); }
+.chart-column:hover .chart-bar { fill:var(--mint); }
+:root[data-theme="light"] .chart-column:hover .chart-bar { fill:var(--onyx); }
+.chart-column:hover .chart-label { fill:var(--ink); }
+.mix-content { display:flex; align-items:center; justify-content:center; gap:20px; padding:10px 0 1px; }
+#mix-chart { flex:0 1 148px; width:148px; max-width:52%; height:auto; overflow:visible; }
+.mix-track { stroke:var(--chart-track); }
+.mix-segment { transition:stroke-dasharray .2s; }
+.mix-segment.high,.legend-dot.high { stroke:var(--chart-high); background:var(--chart-high); }
+.mix-segment.medium,.legend-dot.medium { stroke:var(--chart-medium); background:var(--chart-medium); }
+.mix-segment.low,.legend-dot.low { stroke:var(--chart-low); background:var(--chart-low); }
+.mix-count { fill:var(--ink); font:600 26px 'Manrope',sans-serif; }
+.mix-caption { fill:var(--muted); font:9px 'DM Sans',sans-serif; letter-spacing:1px; }
+.mix-legend { width:126px; display:grid; gap:12px; }
+.legend-item { display:grid; grid-template-columns:9px 1fr auto; align-items:center; gap:8px; color:var(--muted); font-size:11px; }
+.legend-item strong { color:var(--ink); font-size:12px; font-weight:550; font-variant-numeric:tabular-nums; }
+.legend-dot { width:8px; height:8px; border-radius:50%; }
+.timer-wrap { position:relative; }
+#focus-end { display:block; min-height:15px; margin-top:8px; color:var(--mint); font-size:10px; font-variant-numeric:tabular-nums; }
+@media (max-width:1200px) {
+  .charts { grid-template-columns:minmax(0,1.45fr) minmax(280px,1fr); gap:12px; }
+  .chart-card { padding:19px; }
+  .mix-content { gap:10px; }
+  .mix-legend { width:112px; }
+}
+@media (max-width:1000px) {
+  .charts { grid-template-columns:minmax(0,1.4fr) minmax(250px,1fr); }
+  .mix-content { gap:8px; }
+  .legend-item { font-size:10px; gap:6px; }
+}
+@media (max-width:700px) {
+  .charts { grid-template-columns:1fr; gap:10px; margin-bottom:22px; }
+  .chart-card { padding:18px 16px 14px; }
+  .chart-summary { font-size:9px; }
+  .chart-subtitle { font-size:11px; }
+  .weekly-chart { margin-top:13px; }
+  .chart-axis,.chart-label { font-size:11px; }
+  .mix-content { justify-content:flex-start; gap:23px; padding:10px 4px 3px; }
+  #mix-chart { width:139px; flex-basis:139px; }
+  .mix-legend { width:150px; gap:14px; }
+  .legend-item { font-size:12px; }
+}
+@media (prefers-reduced-motion:reduce) { .chart-bar,.mix-segment { transition:none; } }

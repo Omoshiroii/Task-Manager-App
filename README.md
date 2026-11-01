@@ -14,7 +14,7 @@ Visit http://localhost:8000. Press **N** to add a task. Tasks support notes, pri
 
 The header clock shows your local time and date. When tasks are overdue, **Move to today** brings unfinished tasks into today’s plan; the notification offers undo to restore their original dates.
 
-A 25-minute focus timer supports pause and reset. The timer uses elapsed wall-clock time when browser tabs are throttled; keep the page open for the session.
+The dashboard charts completions over the last seven days and breaks open tasks down by priority. A 25-minute focus timer shows its expected finish time and supports pause and reset. The timer uses elapsed wall-clock time when browser tabs are throttled; keep the page open for the session.
 
 ## Appearance
 
@@ -22,7 +22,7 @@ Dark mode is the default, using Onyx (#000F08), Jet Black (#1C3738), Charcoal (#
 
 ## Your data
 
-Tasks are stored in this browser's local storage, using the original `taskflow_v1` key for compatibility. There is no server sync. Export backups before clearing browser data or switching devices. Import merges tasks by ID without replacing existing tasks. Changes synchronize between open tabs on the same origin. Fonts use Google Fonts with local sans-serif fallbacks.
+Tasks are saved in a browser database on this device and load when you return to the same site in the same browser. Existing tasks saved under the original `taskflow_v1` key are imported automatically the first time. The database syncs open tabs on the same site. It does not sync across devices or browsers; export a JSON backup and import it on another device. Import merges by task ID without replacing existing tasks. If the browser does not support its local database, the app falls back to local storage. Browser data may be removed when you clear site storage, so export occasional backups for extra safety. Fonts use Google Fonts with local sans-serif fallbacks.
 
 ## GitHub Pages
 

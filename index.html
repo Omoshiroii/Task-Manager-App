@@ -52,12 +52,24 @@
         <button class="primary" id="add"><svg class="icon"><use href="#icon-plus"/></svg>Add task<kbd>N</kbd></button>
       </div>
 
-      <section class="overview" aria-label="Daily progress">
+      <section class="overview" aria-label="Daily summary">
         <div class="stat-card"><div class="stat-top"><p class="eyebrow">TO DO TODAY</p><svg class="icon"><use href="#icon-list"/></svg></div><div class="stat-bottom"><strong id="active-count">0</strong><small>on your list</small></div></div>
-        <div class="stat-card"><div class="stat-top"><p class="eyebrow">COMPLETED</p><svg class="icon"><use href="#icon-check"/></svg></div><div class="stat-bottom"><strong id="done-count">0</strong><small>steps forward</small></div></div>
+        <div class="stat-card"><div class="stat-top"><p class="eyebrow">COMPLETED</p><svg class="icon"><use href="#icon-check"/></svg></div><div class="stat-bottom"><strong id="done-count">0</strong><small>steps forward today</small></div></div>
         <div class="stat-card momentum"><div class="stat-top"><p class="eyebrow">DAILY PROGRESS</p><b id="percent">0%</b></div><div class="track"><div id="fill"></div></div><small id="progress-copy">One small step is a good place to start.</small></div>
       </section>
 
+      <section class="charts" aria-label="Task dashboard">
+        <article class="chart-card activity-card">
+          <div class="chart-header"><div><p class="eyebrow">YOUR ACTIVITY</p><h2>Weekly progress</h2></div><span id="weekly-total" class="chart-summary">Last 7 days</span></div>
+          <p class="chart-subtitle">Tasks you have completed, day by day.</p>
+          <svg id="weekly-chart" class="weekly-chart" viewBox="0 0 700 190" role="img" aria-label="Task completion chart for the last seven days"></svg>
+        </article>
+        <article class="chart-card mix-card">
+          <div class="chart-header"><div><p class="eyebrow">YOUR OPEN TASKS</p><h2>Priority balance</h2></div></div>
+          <p class="chart-subtitle">A quick look at what is on your plate.</p>
+          <div class="mix-content"><svg id="mix-chart" viewBox="0 0 160 160" role="img" aria-label="Open tasks by priority"></svg><div class="mix-legend" id="mix-legend"></div></div>
+        </article>
+      </section>
       <section id="carry-over" class="carry-over" aria-label="Unfinished tasks" hidden>
         <svg class="icon"><use href="#icon-clock"/></svg><div><strong>A fresh start for unfinished tasks</strong><p id="carry-count"></p></div>
         <button id="carry-today">Move to today<svg class="icon"><use href="#icon-arrow"/></svg></button>
@@ -76,7 +88,7 @@
             <div class="focus-heading"><p class="eyebrow">FOCUS SESSION</p><svg class="icon"><use href="#icon-clock"/></svg></div>
             <h2>One thing at a time.</h2>
             <p>A little uninterrupted time<br>can make a big difference.</p>
-            <div class="timer-wrap"><div id="timer">25:00</div><span class="timer-label">MINUTES OF CLARITY</span></div>
+            <div class="timer-wrap"><div id="timer">25:00</div><span class="timer-label">MINUTES OF CLARITY</span><span id="focus-end" hidden aria-live="polite"></span></div>
             <label class="sr-only" for="focus-task">Task to focus on</label><select id="focus-task"><option value="">Choose a task to focus on</option></select>
             <button id="focus-start">Start a focus session ↗</button><button id="focus-reset" hidden>Reset session</button>
             <small id="focus-caption">Take a breath. Then begin.</small>
