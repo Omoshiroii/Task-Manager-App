@@ -1,18 +1,18 @@
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;450;500;550;600;650;700&family=Manrope:wght@400;500;600;650;700;750;800&display=swap');
 
-/* The five colors in the supplied palette. All UI colors derive from these. */
+/* Original indigo/purple palette, shared by both themes. */
 :root {
-  --onyx: #000f08;
-  --jet: #1c3738;
-  --charcoal: #4d4847;
-  --mint: #f4fff8;
-  --steel: #8baaad;
+  --onyx: #1a1a2e;
+  --jet: #23233e;
+  --charcoal: #343052;
+  --mint: #f5f3ff;
+  --steel: #a5a7ff;
   --bg: var(--onyx);
   --panel: var(--jet);
   --ink: var(--mint);
   --muted: var(--steel);
-  --accent: var(--steel);
-  --accent-ink: var(--onyx);
+  --accent: #6366f1;
+  --accent-ink: #ffffff;
   --line: rgb(from var(--steel) r g b / .2);
   --soft-line: rgb(from var(--steel) r g b / .12);
   --hover: rgb(from var(--steel) r g b / .08);
@@ -23,14 +23,15 @@
 }
 :root[data-theme="light"] {
   --bg: var(--mint);
-  --panel: var(--mint);
+  --panel: #ffffff;
   --ink: var(--onyx);
-  --muted: var(--jet);
-  --accent: var(--jet);
+  --muted: #718096;
+  --accent: #4f46e5;
   --accent-ink: var(--mint);
   --line: rgb(from var(--jet) r g b / .22);
   --soft-line: rgb(from var(--jet) r g b / .12);
   --hover: rgb(from var(--steel) r g b / .15);
+  --steel: #6366f1;
   color-scheme: light;
 }
 * { box-sizing: border-box; }
@@ -65,7 +66,7 @@ nav { display: grid; gap: 6px; }
 nav button { display: flex; align-items: center; gap: 12px; background: none; color: var(--muted); padding: 13px 12px; border-radius: 7px; text-align: left; }
 nav button span { font-size: 13px; font-weight: 500; }
 nav button:hover { background: var(--hover); color: var(--ink); }
-nav button.active { background: var(--steel); color: var(--onyx); }
+nav button.active { background: var(--accent); color: var(--accent-ink); }
 nav i { font-size: 11px; font-style: normal; margin-left: auto; font-variant-numeric: tabular-nums; opacity: .8; }
 .sidebar-note { margin: auto 10px 28px; padding-top: 48px; }
 .note-rule { display: block; width: 28px; height: 1px; background: var(--steel); }
@@ -132,7 +133,7 @@ select option { background: var(--panel); color: var(--ink); }
 .toolbar { display: flex; align-items: center; justify-content: space-between; gap: 14px; padding-bottom: 18px; border-bottom: 1px solid var(--line); }
 .tabs { display: flex; gap: 3px; padding: 3px; border-radius: 6px; background: var(--bg); border: 1px solid var(--line); }
 .tabs button { background: transparent; color: var(--muted); font-size: 11px; white-space: nowrap; border-radius: 4px; padding: 7px 10px; }
-.tabs .selected { background: var(--steel); color: var(--onyx); font-weight: 550; }
+.tabs .selected { background: var(--accent); color: var(--accent-ink); font-weight: 550; }
 .tabs button:not(.selected):hover { color: var(--ink); }
 .search-field { display: flex; align-items: center; gap: 7px; color: var(--muted); min-width: 0; }
 .search-field .icon { width: 16px; height: 16px; }
@@ -140,8 +141,8 @@ select option { background: var(--panel); color: var(--ink); }
 ::placeholder { color: var(--muted); opacity: 1; }
 .task { display: flex; gap: 13px; padding: 22px 0; border-bottom: 1px solid var(--line); align-items: flex-start; }
 .check { appearance: none; margin: 3px 0 0; width: 19px; height: 19px; flex-shrink: 0; border: 1.5px solid var(--steel); background: var(--bg); border-radius: 6px; cursor: pointer; display: grid; place-content: center; }
-.check:checked { background: var(--steel); }
-.check:checked::after { content: ''; width: 8px; height: 4px; border-left: 1.5px solid var(--onyx); border-bottom: 1.5px solid var(--onyx); transform: translateY(-1px) rotate(-45deg); }
+.check:checked { background: var(--accent); }
+.check:checked::after { content: ''; width: 8px; height: 4px; border-left: 1.5px solid var(--mint); border-bottom: 1.5px solid var(--mint); transform: translateY(-1px) rotate(-45deg); }
 .task-body { flex: 1; min-width: 0; }
 .task-name { background: none; text-align: left; padding: 0; font-size: 14px; font-weight: 450; line-height: 1.65; overflow-wrap: anywhere; }
 .task-name:hover { text-decoration: underline; text-underline-offset: 4px; }
@@ -178,7 +179,7 @@ select option { background: var(--panel); color: var(--ink); }
 .timer-label { display: block; font-size: 8px; letter-spacing: 2.1px; margin-top: 8px; color: var(--mint); }
 #focus-task { width: 100%; font-size: 11px; padding: 10px 8px; margin-bottom: 12px; color: var(--mint); background: transparent; border: 1px solid rgb(from var(--mint) r g b / .25); border-radius: 5px; }
 #focus-task option { background: var(--charcoal); color: var(--mint); }
-.focus-card button { width: 100%; background: var(--steel); color: var(--onyx); padding: 12px 8px; border-radius: 5px; font-size: 12px; font-weight: 550; }
+.focus-card button { width: 100%; background: var(--accent); color: var(--accent-ink); padding: 12px 8px; border-radius: 5px; font-size: 12px; font-weight: 550; }
 .focus-card button:hover { background: var(--mint); }
 .focus-card small { display: block; text-align: center; font-size: 10px; line-height: 1.7; color: var(--mint); margin-top: 13px; }
 #focus-reset { margin-top: 8px; background: none; color: var(--mint); border: 1px solid rgb(from var(--mint) r g b / .25); padding: 8px; font-size: 11px; }
@@ -205,7 +206,7 @@ textarea { resize: vertical; }
 .dialog-footer { display: flex; justify-content: flex-end; gap: 10px; margin-top: 6px; }
 .dialog-footer button { padding: 12px 18px; border-radius: 6px; font-size: 12px; }
 #cancel { background: transparent; color: var(--muted); border: 1px solid var(--line); }
-#toast { display: flex; align-items: center; gap: 14px; position: fixed; bottom: 25px; left: 50%; transform: translateX(-50%); background: var(--steel); color: var(--onyx); border: 1px solid var(--onyx); border-radius: 8px; padding: 15px 18px; font-size: 12px; max-width: calc(100% - 32px); z-index: 5; box-shadow: 0 8px 30px rgb(from var(--onyx) r g b / .4); }
+#toast { display: flex; align-items: center; gap: 14px; position: fixed; bottom: 25px; left: 50%; transform: translateX(-50%); background: var(--accent); color: var(--accent-ink); border: 1px solid var(--onyx); border-radius: 8px; padding: 15px 18px; font-size: 12px; max-width: calc(100% - 32px); z-index: 5; box-shadow: 0 8px 30px rgb(from var(--onyx) r g b / .4); }
 #toast button { background: transparent; color: var(--onyx); padding: 3px; }
 #undo { text-decoration: underline; font-weight: 600; }
 #dismiss { font-size: 18px; }
